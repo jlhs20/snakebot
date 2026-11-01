@@ -1,6 +1,7 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
 "C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/apple.png","C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/bin/DesktopGL/Content/apple.xnb","TextureProcessor","Texture2DContent",2671,16469,0.2394541
 "C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/blink.png","C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/bin/DesktopGL/Content/blink.xnb","TextureProcessor","Texture2DContent",1989,16469,0.2708506
+"C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/card_flip.png","C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/bin/DesktopGL/Content/card_flip.xnb","TextureProcessor","Texture2DContent",12780,98389,0.2107772
 "C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/card_forward_1.png","C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/bin/DesktopGL/Content/card_forward_1.xnb","TextureProcessor","Texture2DContent",13720,98389,0.2175388
 "C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/card_forward_2.png","C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/bin/DesktopGL/Content/card_forward_2.xnb","TextureProcessor","Texture2DContent",14839,98389,0.0097692
 "C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/card_left.png","C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/bin/DesktopGL/Content/card_left.xnb","TextureProcessor","Texture2DContent",12604,98389,0.0132195

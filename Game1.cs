@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,6 +17,7 @@ public class Game1 : Game
     private KeyboardState _oldKeyboardState;
     private MathHelper.Random _random;
     private Cards _cards;
+    private int _rewinds = 5;
 
     public Game1()
     {
@@ -34,24 +36,10 @@ public class Game1 : Game
 
         GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-        // in future: randomize snake and apple positions
-        _snake = new Snake(new (int, int)[]
-        {
-            (4, 5),
-            (5, 5),
-            (6, 5),
-            (7, 5),
-            (8, 5),
-            (9, 5),
-            (9, 4),
-            (8, 4),
-            (7, 4),
-            (6, 4),
-            (5, 4),
-            (4, 4),
-        });
+        _snake = new Snake(null);
         _random = new MathHelper.Random();
         _apple = new Apple((3, 3));
+        RandomizeApple();
         _cards = new Cards(_snake);
 
         base.Initialize();
@@ -67,6 +55,20 @@ public class Game1 : Game
         _cards.LoadContent(Content);
     }
 
+    private void RandomizeApple()
+    {
+        List<(int, int)> tiles = new();
+        for (int x = 0; x < 16; x++)
+        {
+            for (int y = 0; y < 9; y++)
+            {
+                if (!_snake.Segments.Contains<(int, int)>((x, y)))
+                    tiles.Add((x, y));
+            }
+        }
+        _apple.Position = tiles[_random.Next(0, tiles.Count)];
+    }
+
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -75,17 +77,7 @@ public class Game1 : Game
         if (_apple.Position == _snake.Segments[0])
         {
             _snake.Grow();
-
-            List<(int, int)> tiles = new();
-            for (int x = 0; x < 16; x++)
-            {
-                for (int y = 0; y < 9; y++)
-                {
-                    if (!_snake.Segments.Contains<(int, int)>((x, y)))
-                        tiles.Add((x, y));
-                }
-            }
-            _apple.Position = tiles[_random.Next(0, tiles.Count)];
+            RandomizeApple();
         }
 
         if (_snake.Segments[0].Item1 > 15 || _snake.Segments[0].Item1 < 0 || _snake.Segments[0].Item2 < 0 || _snake.Segments[0].Item2 > 8 || _snake.Segments[1..].Contains(_snake.Segments[0]))
@@ -95,6 +87,8 @@ public class Game1 : Game
 
         KeyboardState keyboardState = Keyboard.GetState();
         if (_snake.Dead && keyboardState.IsKeyDown(Keys.Enter) && !_oldKeyboardState.IsKeyDown(Keys.Enter)) Initialize();
+        //if (keyboardState.IsKeyDown(Keys.F) && !_oldKeyboardState.IsKeyDown(Keys.F)) _snake.Flip();
+        if (keyboardState.IsKeyDown(Keys.R) && !_oldKeyboardState.IsKeyDown(Keys.R)) _snake.Rewind(); // we want to only allow this on death, and to only allow so many rewinds
         _oldKeyboardState = keyboardState;
 
         _snake.Update(gameTime);

@@ -35,7 +35,7 @@ public class Cards
         // but for now we'll just pick randomly
         for (int i = 0; i < _hand.Length; i++)
         {
-            int t = _random.Next(0, 4);
+            int t = _random.Next(0, 5);
             switch (t)
             {
                 case 0:
@@ -49,6 +49,9 @@ public class Cards
                     break;
                 case 3:
                     _hand[i] = new Right();
+                    break;
+                case 4:
+                    _hand[i] = new Flip(); // in the future this should be a card you have to buy from the shop
                     break;
             }
 
@@ -75,6 +78,7 @@ public class Cards
         content.Load<Texture2D>("card_forward_2");
         content.Load<Texture2D>("card_left");
         content.Load<Texture2D>("card_right");
+        content.Load<Texture2D>("card_flip");
 
         for (int i = 0; i < _hand.Length; i++)
         {
@@ -101,6 +105,17 @@ public class Cards
                     _selectedIndex++;
                     _hand[_selectedIndex].Selected = true;
                 }
+                else
+                {
+                    if (_hand[_selectedIndex].Raised)
+                    {
+                        Swap(_selectedIndex, 0);
+                    }
+
+                    _hand[_selectedIndex].Selected = false;
+                    _selectedIndex = 0;
+                    _hand[_selectedIndex].Selected = true;
+                }
             }
             else if (keyboardState.IsKeyDown(Keys.Up) && !_oldKeyboardState.IsKeyDown(Keys.Up)) 
             {
@@ -122,6 +137,17 @@ public class Cards
 
                     _hand[_selectedIndex].Selected = false;
                     _selectedIndex--;
+                    _hand[_selectedIndex].Selected = true;
+                }
+                else
+                {
+                    if (_hand[_selectedIndex].Raised)
+                    {
+                        Swap(_selectedIndex, _hand.Length - 1);
+                    }
+
+                    _hand[_selectedIndex].Selected = false;
+                    _selectedIndex = _hand.Length - 1;
                     _hand[_selectedIndex].Selected = true;
                 }
             }

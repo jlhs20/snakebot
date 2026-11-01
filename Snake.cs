@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,13 +16,14 @@ public enum Direction
 
 public class Snake
 {
-    private const float finalR = 0.95f;
-    private const float finalG = 0.65f;
-    private const float finalB = 0.1f;
+    private const float finalR = 1f;
+    private const float finalG = 0.7f;
+    private const float finalB = 0.2f;
     private int[] vertexOrder = new[] {0, 1, 1, 0, 0, 1};
 
     private (int, int)[] _segments;
     private (int, int)[] _oldSegments;
+    private List<(int, int)[]> _history;
     private Texture2D _body;
     private Texture2D _head;
     private Texture2D _blink;
@@ -39,10 +41,73 @@ public class Snake
 
     public Snake((int, int)[] segments)
     {
-        _segments = segments;
-        _oldSegments = segments;
         _random = new MathHelper.Random();
+        if (segments == null || segments.Length == 0) _segments = Randomize();
+        else _segments = segments;
+        _history = [_segments];
+        _oldSegments = _segments;
         _blinkTimer = _random.NextFloat()*5.0f + 3.0f;
+    }
+
+    public void Rewind()
+    {
+        _oldSegments = _segments;
+        _segments = _history.Last();
+        if (_history.Count > 1) _history.RemoveAt(_history.Count-1);
+        //(int, int)[] temp = _segments;
+        //_segments = _oldSegments;
+        //_oldSegments = temp;
+        _tween = 0f;
+    }
+
+    public void Flip()
+    {
+        _history.Add(_segments);
+        _oldSegments = _segments;
+        (int, int)[] segments = new (int, int)[_segments.Length];
+        for (int i = 0; i < _segments.Length; i++)
+        {
+            segments[i] = _segments[_segments.Length-1-i];
+        }
+        _segments = segments;
+        _tween = 0f;
+    }
+
+    private (int, int)[] Randomize()
+    {
+        (int, int)[] segments = new (int, int)[6];
+        segments[0] = (_random.Next(2, 13), _random.Next(2, 6));
+        bool valid = false;
+
+        while (!valid)
+        {
+            valid = true;
+            for (int i = 1; i < 6; i++)
+            {
+                int direction = _random.Next(0, 4);
+                switch (direction)
+                {
+                    case 0: // up
+                        segments[i] = (segments[i-1].Item1, segments[i-1].Item2-1);
+                        break;
+                    case 1: // down
+                        segments[i] = (segments[i-1].Item1, segments[i-1].Item2+1);
+                        break;
+                    case 2: // left
+                        segments[i] = (segments[i-1].Item1-1, segments[i-1].Item2);
+                        break;
+                    case 3: // right
+                        segments[i] = (segments[i-1].Item1+1, segments[i-1].Item2);
+                        break;
+                }
+                if (segments[i].Item1 < 0 || segments[i].Item1 > 15 || segments[i].Item2 < 0 || segments[i].Item2 > 8 || segments[..(i-1)].Contains(segments[i]))
+                {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        return segments;
     }
 
     public void LoadContent(ContentManager content)
@@ -78,7 +143,7 @@ public class Snake
     {
         (int, int)[] newSegments = new (int, int)[_segments.Length + 1];
         _segments.CopyTo(newSegments, 0);
-        newSegments[_segments.Length] = _oldSegments[_segments.Length - 1];
+        newSegments[_segments.Length] = _history.Last()[_segments.Length - 1];
         _segments = newSegments;
 
         _yumTimer = 1f;
@@ -86,16 +151,12 @@ public class Snake
 
     public void Move(Direction direction)
     {
-        _oldSegments = new (int, int)[_segments.Length];
-        _segments.CopyTo(_oldSegments, 0);
-
-        //(int, int) tail = _segments[_segments.Length - 1];
-        //if (grow)
-        //{
-        //    _segments = new (int, int)[_segments.Length+1];
-        //    _oldSegments.CopyTo(_segments, 0);
-        //    _segments[_segments.Length-1] = tail;
-        //}
+        _oldSegments = _segments;
+        _history.Add(_segments);
+        
+        (int, int)[] segments = new (int, int)[_segments.Length];
+        _segments.CopyTo(segments, 0);
+        _segments = segments;
 
         for (int i = _segments.Length-1; i > 0; i--)
         {
@@ -247,6 +308,8 @@ public class Snake
 
     public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
     {
+        //(int, int)[] _oldSegments = _history.Last();
+
         // draw tail
         float newTailRotation = 0;
         float oldTailRotation = 0;
