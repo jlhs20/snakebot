@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -36,7 +37,7 @@ public class Game1 : Game
 
         GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-        _snake = new Snake(null);
+        _snake = new Snake(ReadSaveFile("snake.txt"));
         _random = new MathHelper.Random();
         _apple = new Apple((3, 3));
         RandomizeApple();
@@ -67,6 +68,40 @@ public class Game1 : Game
             }
         }
         _apple.Position = tiles[_random.Next(0, tiles.Count)];
+    }
+
+    private (int, int)[] ReadSaveFile(string filename) // in the future, I would want a more advanced save file that saves the hand, deck, apples collected, high score, etc
+    {
+        if (!File.Exists(filename)) return null;
+        else
+        {
+            string[] lines = File.ReadAllLines(filename);
+            List<(int, int)> segmentsList = new();
+            foreach (string line in lines)
+            {
+                string[] split = line.Split(",");
+                segmentsList.Add((Convert.ToInt32(split[0]), Convert.ToInt32(split[1])));
+            }
+            return segmentsList.ToArray();
+        }
+    }
+
+    private void WriteSaveFile(string filename, (int, int)[] segments)
+    {
+        List<string> lines = new();
+        foreach ((int, int) segment in segments)
+        {
+            lines.Add($"{segment.Item1},{segment.Item2}");
+        }
+        File.WriteAllLines(filename, lines);
+    }
+
+    protected override void OnExiting(object sender, ExitingEventArgs args)
+    {
+        base.OnExiting(sender, args);
+
+        // save snake position to file
+        WriteSaveFile("snake.txt", _snake.Segments);
     }
 
     protected override void Update(GameTime gameTime)
