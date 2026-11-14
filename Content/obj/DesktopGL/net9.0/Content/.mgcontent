@@ -5,6 +5,7 @@
   <Config />
   <SourceFiles>
     <File>C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/apple.png</File>
+    <File>C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/appul.fbx</File>
     <File>C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/blink.png</File>
     <File>C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/card_flip.png</File>
     <File>C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/card_forward_1.png</File>
@@ -19,6 +20,7 @@
     <File>C:/Users/johnh/OneDrive/Documents/cis580/snakebot/Content/yum.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

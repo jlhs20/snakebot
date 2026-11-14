@@ -147,7 +147,7 @@ public class Game1 : Game
             }
         }
         _snake.Draw(gameTime, _spriteBatch, GraphicsDevice);
-        _apple.Draw(gameTime, _spriteBatch);
+        _apple.Draw(gameTime, GraphicsDevice);
         _cards.Draw(gameTime, _spriteBatch);
         _spriteBatch.End();
 
